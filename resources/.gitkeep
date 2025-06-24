@@ -1,0 +1,20 @@
+# 此文件用于保持resources目录在Git中被跟踪
+# 将游戏资源文件（图片、音频、字体等）放在此目录下
+# 当你添加资源文件时，可以删除此文件
+#
+# This file keeps the resources directory tracked in Git
+# Place game assets (images, audio, fonts, etc.) in this directory
+# You can delete this file when you add resource files
+#
+# 建议的资源文件组织结构：
+# resources/
+# ├── images/
+# │   ├── sprites/
+# │   ├── backgrounds/
+# │   └── ui/
+# ├── audio/
+# │   ├── music/
+# │   └── sounds/
+# ├── fonts/
+# └── data/
+#     └── levels/

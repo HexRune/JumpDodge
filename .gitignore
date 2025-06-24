@@ -1,0 +1,222 @@
+# ===========================================
+# Raylib + CMake 项目 .gitignore
+# ===========================================
+
+# =================== 构建输出 ===================
+# CMake构建目录
+build/
+Build/
+builds/
+cmake-build-*/
+
+# 可执行文件
+*.exe
+*.out
+*.app
+game
+game.exe
+RaylibGame
+RaylibGame.exe
+
+# 编译产物
+*.o
+*.obj
+*.lib
+*.a
+*.so
+*.dll
+*.dylib
+
+# =================== IDE和编辑器 ===================
+# Visual Studio Code
+.vscode/settings.json
+.vscode/tasks.json
+.vscode/launch.json
+.vscode/extensions.json
+.vscode/c_cpp_properties.json
+# 保留模板配置，忽略个人定制
+!.vscode/settings.json.template
+!.vscode/tasks.json.template
+!.vscode/launch.json.template
+
+# Visual Studio
+.vs/
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+*.sln
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# CLion
+.idea/
+cmake-build-*/
+
+# Code::Blocks
+*.layout
+*.depend
+*.cbp
+
+# Qt Creator
+CMakeLists.txt.user*
+
+# =================== 系统文件 ===================
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+._*
+.Spotlight-V100
+.Trashes
+
+# Linux
+*~
+.nfs*
+
+# =================== 开发工具 ===================
+# CMake
+CMakeCache.txt
+CMakeFiles/
+CMakeScripts/
+Testing/
+Makefile
+cmake_install.cmake
+install_manifest.txt
+compile_commands.json
+CTestTestfile.cmake
+_deps/
+
+# Ninja
+.ninja_deps
+.ninja_log
+
+# Make
+*.d
+
+# pkg-config
+*.pc.in
+
+# =================== 调试和性能分析 ===================
+# GDB
+.gdb_history
+
+# Valgrind
+*.memcheck
+*.helgrind
+*.drd
+*.massif
+*.callgrind
+
+# =================== 日志和临时文件 ===================
+# 日志文件
+*.log
+logs/
+
+# 临时文件
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+# 备份文件
+*.bak
+*.backup
+*.orig
+
+# =================== 第三方依赖 ===================
+# 选项A: 包含第三方库源码（当前配置）
+# 如果你想上传第三方库源码，保持下面的注释状态
+
+# 选项B: 忽略第三方库源码（推荐给团队项目）
+# 如果要忽略第三方库，取消下面的注释：
+# library/*/
+# !library/.gitkeep
+# !library/README.md
+
+# 包管理器相关
+# 如果使用vcpkg
+vcpkg_installed/
+.vcpkg-root
+
+# 如果使用Conan
+conandata.yml
+conanbuildinfo.*
+conaninfo.txt
+
+# 如果使用CPM或FetchContent下载的依赖
+_deps/
+
+# =================== 资源文件 ===================
+# 大型资源文件（根据需要调整）
+# *.wav
+# *.mp3
+# *.ogg
+# *.png
+# *.jpg
+# *.jpeg
+# *.bmp
+
+# 资源构建产物
+resources/compiled/
+
+# =================== 文档生成 ===================
+# Doxygen
+docs/html/
+docs/latex/
+docs/xml/
+*.dox
+
+# =================== 包和发布 ===================
+# 打包文件
+*.zip
+*.tar.gz
+*.tar.bz2
+*.rar
+*.7z
+
+# 安装包
+*.msi
+*.dmg
+*.deb
+*.rpm
+
+# =================== 个人配置 ===================
+# 个人配置文件
+config.local.*
+.env.local
+secrets.txt
+
+# 测试数据
+test_data/
+*.test
+
+# =================== 特定于raylib的忽略 ===================
+# 如果你在library目录下编译了raylib
+library/raylib/build/
+library/raylib/cmake-build-*/
+
+# raylib可能生成的文件
+raylib.pc
+
+# =================== 其他常见忽略项 ===================
+# 编辑器插件生成的文件
+.clang-format
+.clang-tidy
+
+# 性能分析
+*.prof
+gmon.out
+
+# 核心转储文件
+core
+core.*
