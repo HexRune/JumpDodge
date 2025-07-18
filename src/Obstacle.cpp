@@ -35,11 +35,11 @@ bool Obstacle::IsScored()
 
 void Obstacle::Reset()
 {
-    float x = GetScreenWidth();
-    float y = GetRandomValue(420,550);
+    float x = static_cast<float>(GetScreenWidth());
+    float y = static_cast<float>(GetRandomValue(420,550));
     rect = Rectangle{x,y,30,GetScreenHeight() - y};
     scored = false;
-    speed = GetRandomValue(200,500);
+    speed = static_cast<float>(GetRandomValue(200,500));
 }
 
 void Obstacle::ScoreIsAdd()
