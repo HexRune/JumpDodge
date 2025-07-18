@@ -31,12 +31,21 @@ endif()
 
 # 编译器设置
 if(COMPILER_IS_MSVC)
+    # 基本编译选项
     add_compile_options(/W3 /utf-8)
     add_compile_definitions(_CRT_SECURE_NO_WARNINGS)
+    
+    # 根据构建类型设置不同的编译选项
     if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-        add_compile_options(/Od /Zi)
+        # Debug 模式：禁用优化，启用调试信息，但不添加全局编译选项
+        set(CMAKE_CXX_FLAGS_DEBUG "/Od /Zi /RTC1")
+        set(CMAKE_C_FLAGS_DEBUG "/Od /Zi /RTC1")
+        set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreadedDebugDLL")
     else()
-        add_compile_options(/O2)
+        # Release 模式：启用优化
+        set(CMAKE_CXX_FLAGS_RELEASE "/O2 /DNDEBUG")
+        set(CMAKE_C_FLAGS_RELEASE "/O2 /DNDEBUG")
+        set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreadedDLL")
     endif()
 elseif(COMPILER_IS_CLANG OR COMPILER_IS_GCC)
     add_compile_options(-Wall -Wextra)
@@ -57,7 +66,47 @@ set(BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 set(BUILD_GAMES OFF CACHE BOOL "" FORCE)
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
 
+# MSVC 特定的 raylib 配置
+if(COMPILER_IS_MSVC)
+    # 强制 raylib 使用与主项目相同的运行时库
+    set(USE_MSVC_RUNTIME_LIBRARY_DLL ON CACHE BOOL "" FORCE)
+    
+    # 禁用一些可能导致问题的 GLFW 功能
+    set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+    set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+    set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
+    set(GLFW_INSTALL OFF CACHE BOOL "" FORCE)
+    
+    # 确保 GLFW 使用正确的运行时库和编译选项
+    if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+        set(GLFW_USE_MSVC_RUNTIME_LIBRARY_DLL ON CACHE BOOL "" FORCE)
+        # 强制设置 GLFW 的 Debug 编译标志，避免优化选项冲突
+        set(CMAKE_CXX_FLAGS_DEBUG_INIT "/Od /Zi /RTC1")
+        set(CMAKE_C_FLAGS_DEBUG_INIT "/Od /Zi /RTC1")
+    endif()
+    
+    # 设置全局策略以避免编译选项冲突
+    cmake_policy(SET CMP0092 NEW)  # 不自动添加 /W3
+endif()
+
 add_subdirectory(library/raylib)
+
+# 修复 GLFW 在 MSVC Debug 模式下的编译选项冲突
+if(COMPILER_IS_MSVC AND CMAKE_BUILD_TYPE STREQUAL "Debug")
+    # 获取 GLFW 目标并修复其编译选项
+    if(TARGET glfw)
+        # 移除可能冲突的优化选项
+        get_target_property(GLFW_COMPILE_OPTIONS glfw COMPILE_OPTIONS)
+        if(GLFW_COMPILE_OPTIONS)
+            list(REMOVE_ITEM GLFW_COMPILE_OPTIONS "/O2")
+            set_target_properties(glfw PROPERTIES COMPILE_OPTIONS "${GLFW_COMPILE_OPTIONS}")
+        endif()
+        
+        # 设置正确的 Debug 编译选项
+        target_compile_options(glfw PRIVATE /Od /Zi /RTC1)
+        target_compile_definitions(glfw PRIVATE _DEBUG)
+    endif()
+endif()
 
 # 恢复警告
 set(CMAKE_WARN_DEPRECATED ON)
@@ -79,6 +128,19 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
     OUTPUT_NAME "${EXECUTABLE_NAME}"
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
 )
+
+# MSVC 特定设置
+if(COMPILER_IS_MSVC)
+    # 确保主项目使用正确的运行时库
+    set_target_properties(${PROJECT_NAME} PROPERTIES
+        MSVC_RUNTIME_LIBRARY "${CMAKE_MSVC_RUNTIME_LIBRARY}"
+    )
+    
+    # Debug 模式下的额外设置
+    if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+        target_compile_definitions(${PROJECT_NAME} PRIVATE _ITERATOR_DEBUG_LEVEL=2)
+    endif()
+endif()
 
 # 链接 raylib
 target_link_libraries(${PROJECT_NAME} PRIVATE raylib)
@@ -148,6 +210,9 @@ message(STATUS "Project: ${PROJECT_NAME} v${PROJECT_VERSION}")
 message(STATUS "Compiler: ${CMAKE_CXX_COMPILER_ID}")
 message(STATUS "Build Type: ${CMAKE_BUILD_TYPE}")
 message(STATUS "C++ Standard: C++${CMAKE_CXX_STANDARD}")
+if(COMPILER_IS_MSVC)
+    message(STATUS "MSVC Runtime: ${CMAKE_MSVC_RUNTIME_LIBRARY}")
+endif()
 message(STATUS "Output: ${CMAKE_BINARY_DIR}/bin")
 message(STATUS "==============================")
 
